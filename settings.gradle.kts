@@ -31,3 +31,4 @@ dependencyResolutionManagement {
 include(":architecture")
 include(":sample:composeApp")
 
+include(":networking")
