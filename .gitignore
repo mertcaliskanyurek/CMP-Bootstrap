@@ -1,0 +1,66 @@
+# Gradle
+.gradle/
+build/
+*/build/
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+!gradle/wrapper/gradle-wrapper.jar
+
+# Kotlin
+.kotlin/
+*.kotlin_module
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Android
+local.properties
+*.apk
+*.ap_
+*.aab
+*.dex
+captures/
+.externalNativeBuild/
+.cxx/
+*.log
+
+# iOS
+xcuserdata/
+*.xcworkspace/
+!*.xcworkspace/contents.xcworkspacedata
+*.xcuserstate
+*.moved-aside
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+Pods/
+.DS_Store
+
+# Signing & Security
+*.jks
+*.keystore
+*.gpg
+signing.properties
+secrets.properties
+
+# Dependencies
+node_modules/
+*yarn.lock
+package-lock.json
+
+# Maven Publishing
+maven/
+
+# Other
+*.class
+.DS_Store
+*.swp
+*~
+.vscode/
