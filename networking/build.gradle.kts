@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.android.lint)
+    alias(libs.plugins.maven.publish)
 }
 
 kotlin {
@@ -62,8 +63,8 @@ kotlin {
                 implementation(libs.kotlin.stdlib)
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.content.negotiation)
-                implementation(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.ktor.client.logging)
+                api(libs.ktor.serialization.kotlinx.json)
             }
         }
 
@@ -102,4 +103,35 @@ kotlin {
         }
     }
 
+}
+
+mavenPublishing {
+    publishToMavenCentral()
+    coordinates("com.mertcaliskanyurek.cmpbootstrap", "networking", "1.0.0")
+
+    pom {
+        name = "CMP Bootstrap Networking"
+        description = "Kotlin Multiplatform networking utilities"
+        url = "https://github.com/mertcaliskanyurek/CMP-Bootstrap"
+
+        licenses {
+            license {
+                name = "MIT"
+                url = "https://opensource.org/licenses/MIT"
+            }
+        }
+
+        developers {
+            developer {
+                id = "mertcaliskanyurek"
+                name = "Mert Caliskan Yurek"
+                email = "your.email@example.com"
+            }
+        }
+
+        scm {
+            url = "https://github.com/mertcaliskanyurek/CMP-Bootstrap"
+        }
+    }
+    if (project.hasProperty("signing.keyId")) signAllPublications()
 }

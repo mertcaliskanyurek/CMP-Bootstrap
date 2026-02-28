@@ -1,58 +1,55 @@
 package com.mertcaliskanyurek.bootstrap.networking
 
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.delete
-import io.ktor.client.request.get
-import io.ktor.client.request.post
-import io.ktor.client.request.put
-import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
-
-class ApiClient(val httpClient: HttpClient) {
+/**
+ * High-level API client wrapper.
+ *
+ * Projects should use this instead of IHttpClient directly.
+ * It doesn't expose any Ktor implementation details.
+ */
+class ApiClient(val httpClient: IHttpClient) {
 
     suspend inline fun <reified T> get(
         url: String,
-        noinline configure: HttpRequestBuilder.() -> Unit = {}
+        noinline configure: HttpRequestConfig.() -> Unit = {}
     ): T {
-        return httpClient.get(url) {
-            configure()
-        }.body()
+        return httpClient.get(url, configure)
     }
 
     suspend inline fun <reified T, reified R> post(
         url: String,
         body: T,
-        noinline configure: HttpRequestBuilder.() -> Unit = {}
+        noinline configure: HttpRequestConfig.() -> Unit = {}
     ): R {
-        return httpClient.post(url) {
-            contentType(ContentType.Application.Json)
-            setBody(body)
-            configure()
-        }.body()
+        return httpClient.post(url, body, configure)
     }
 
     suspend inline fun <reified T, reified R> put(
         url: String,
         body: T,
-        noinline configure: HttpRequestBuilder.() -> Unit = {}
+        noinline configure: HttpRequestConfig.() -> Unit = {}
     ): R {
-        return httpClient.put(url) {
-            contentType(ContentType.Application.Json)
-            setBody(body)
-            configure()
-        }.body()
+        return httpClient.put(url, body, configure)
     }
 
     suspend inline fun <reified T> delete(
         url: String,
-        noinline configure: HttpRequestBuilder.() -> Unit = {}
+        noinline configure: HttpRequestConfig.() -> Unit = {}
     ): T {
-        return httpClient.delete(url) {
-            configure()
-        }.body()
+        return httpClient.delete(url, configure)
+    }
+
+    suspend fun close() {
+        httpClient.close()
     }
     
+    companion object {
+        /**
+         * Create an ApiClient with default configuration
+         */
+        fun create(config: HttpClientConfig = HttpClientConfig()): ApiClient {
+            val factory = HttpClientFactory.default()
+            val httpClient = factory.create(config)
+            return ApiClient(httpClient)
+        }
+    }
 }
