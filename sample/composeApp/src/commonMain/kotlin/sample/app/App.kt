@@ -1,21 +1,14 @@
 package sample.app
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import com.mertcaliskanyurek.cmpbootstrap.getFibonacciNumbers
+import cafe.adriel.voyager.navigator.Navigator
+import org.koin.compose.KoinApplication
+import sample.app.di.appModule
+import sample.app.presentation.postlist.PostListScreen
 
 @Composable
 fun App() {
-    Box(
-        modifier = Modifier.fillMaxSize().background(Color.White),
-        contentAlignment = Alignment.Center
-    ) {
-        BasicText("getFibonacciNumbers(7)=${getFibonacciNumbers(7).joinToString(", ")}")
+    KoinApplication(application = { modules(appModule) }) {
+        Navigator(screen = PostListScreen())
     }
 }

@@ -32,3 +32,4 @@ include(":architecture")
 include(":sample:composeApp")
 
 include(":networking")
+include(":datastore")

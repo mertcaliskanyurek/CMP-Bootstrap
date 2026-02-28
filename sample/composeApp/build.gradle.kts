@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.compose)
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -20,12 +21,23 @@ kotlin {
         }
     }
 
+    sourceSets.all {
+        languageSettings.enableLanguageFeature("ExplicitBackingFields")
+        languageSettings.optIn("androidx.compose.material3.ExperimentalMaterial3Api")
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.ui)
             implementation(compose.foundation)
+            implementation(compose.material3)
             implementation(project(":architecture"))
+            implementation(project(":networking"))
+            implementation(libs.voyager.navigator)
+            implementation(libs.voyager.koin)
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
         }
 
         androidMain.dependencies {
@@ -40,7 +52,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        minSdk = 21
+        minSdk = 24
         targetSdk = 35
 
         applicationId = "sample.app.androidApp"

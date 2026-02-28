@@ -47,10 +47,10 @@ kotlin {
 
 android {
     namespace = "com.mertcaliskanyurek.cmpbootstrap"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
-        minSdk = 21
+        minSdk = 24
     }
 }
 
@@ -58,7 +58,7 @@ android {
 //https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-publish-libraries.html
 mavenPublishing {
     publishToMavenCentral()
-    coordinates("com.mertcaliskanyurek.cmpbootstrap", "shared", "1.0.0")
+    coordinates("com.mertcaliskanyurek.cmpbootstrap", "architecture", "1.0.0")
 
     pom {
         name = "CmpBootstrap"
