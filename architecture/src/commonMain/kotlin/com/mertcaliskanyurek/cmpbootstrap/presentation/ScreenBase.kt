@@ -52,6 +52,14 @@ interface ScreenBase<State, Event, SM : ScreenModelBase<State, Event>> : Screen 
             is NavigationEvent.Replace -> {
                 navigator.replace(event.route.getScreen())
             }
+
+            is NavigationEvent.ReplaceAll -> {
+                navigator.replaceAll(event.route.getScreen())
+            }
+
+            is NavigationEvent.PopUntil -> {
+                navigator.popUntil(event.predicate)
+            }
         }
     }
 }

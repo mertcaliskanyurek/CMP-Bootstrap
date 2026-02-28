@@ -1,9 +1,7 @@
 package sample.app.presentation.postlist
 
-import cafe.adriel.voyager.core.model.screenModelScope
 import com.mertcaliskanyurek.cmpbootstrap.presentation.NavigationEvent
 import com.mertcaliskanyurek.cmpbootstrap.presentation.ScreenModelBase
-import kotlinx.coroutines.launch
 import sample.app.data.model.Post
 import sample.app.domain.GetPostsUseCase
 import sample.app.presentation.postdetail.PostDetailRoute
@@ -29,22 +27,20 @@ class PostListScreenModel(
         loadPosts()
     }
 
-    override fun handleUIEvent(event: PostListEvent) {
+    override suspend fun handleUIEvent(event: PostListEvent) {
         when (event) {
             PostListEvent.LoadPosts -> loadPosts()
-            is PostListEvent.OnPostClick -> screenModelScope.launch {
-                emitNavigationEvent(
-                    NavigationEvent.Push(PostDetailRoute(event.postId))
-                )
+            is PostListEvent.OnPostClick -> {
+                emitNavigationEvent(NavigationEvent.Push(PostDetailRoute(event.postId)))
             }
-            PostListEvent.NavigateToSavedPosts -> screenModelScope.launch {
+            PostListEvent.NavigateToSavedPosts -> {
                 emitNavigationEvent(NavigationEvent.Push(SavedPostsRoute()))
             }
         }
     }
 
     private fun loadPosts() {
-        screenModelScope.launch {
+        launch {
             updateState { it.copy(isLoading = true, error = null) }
             val result = getPostsUseCase(Unit)
             result.fold(

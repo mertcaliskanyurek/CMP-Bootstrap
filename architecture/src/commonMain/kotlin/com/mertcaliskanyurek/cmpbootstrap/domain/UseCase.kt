@@ -11,14 +11,14 @@ abstract class UseCase<in Params, out T>(
     suspend operator fun invoke(params: Params): Result<T> {
         return try {
             withContext(dispatcher) {
-                execute(params)
+                Result.success(execute(params))
             }
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    protected abstract suspend fun execute(params: Params): Result<T>
+    protected abstract suspend fun execute(params: Params): T
 }
 
 abstract class NoParamUseCase<out T>(

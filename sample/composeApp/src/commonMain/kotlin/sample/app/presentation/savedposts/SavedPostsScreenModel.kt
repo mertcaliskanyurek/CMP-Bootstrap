@@ -1,9 +1,7 @@
 package sample.app.presentation.savedposts
 
-import cafe.adriel.voyager.core.model.screenModelScope
 import com.mertcaliskanyurek.cmpbootstrap.presentation.NavigationEvent
 import com.mertcaliskanyurek.cmpbootstrap.presentation.ScreenModelBase
-import kotlinx.coroutines.launch
 import sample.app.data.model.Post
 import sample.app.domain.ObserveSavedPostsUseCase
 import sample.app.domain.RemovePostUseCase
@@ -25,22 +23,24 @@ class SavedPostsScreenModel(
 ) : ScreenModelBase<SavedPostsState, SavedPostsEvent>(SavedPostsState()) {
 
     init {
-        screenModelScope.launch {
-            observeSavedPostsUseCase().collect { posts ->
-                updateState { it.copy(posts = posts) }
+        launch {
+            observeSavedPostsUseCase().collect { result ->
+                result.onSuccess { posts ->
+                    updateState { it.copy(posts = posts) }
+                }
             }
         }
     }
 
-    override fun handleUIEvent(event: SavedPostsEvent) {
+    override suspend fun handleUIEvent(event: SavedPostsEvent) {
         when (event) {
-            is SavedPostsEvent.OnPostClick -> screenModelScope.launch {
+            is SavedPostsEvent.OnPostClick -> {
                 emitNavigationEvent(NavigationEvent.Push(PostDetailRoute(event.postId)))
             }
-            is SavedPostsEvent.RemovePost -> screenModelScope.launch {
+            is SavedPostsEvent.RemovePost -> {
                 removePostUseCase(event.postId)
             }
-            SavedPostsEvent.NavigateBack -> screenModelScope.launch {
+            SavedPostsEvent.NavigateBack -> {
                 emitNavigationEvent(NavigationEvent.NavigateBack)
             }
         }

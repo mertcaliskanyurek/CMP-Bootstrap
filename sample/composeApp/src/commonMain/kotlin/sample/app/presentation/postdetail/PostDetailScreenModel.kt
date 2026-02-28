@@ -1,10 +1,8 @@
 package sample.app.presentation.postdetail
 
-import cafe.adriel.voyager.core.model.screenModelScope
 import com.mertcaliskanyurek.cmpbootstrap.presentation.NavigationEvent
 import com.mertcaliskanyurek.cmpbootstrap.presentation.ScreenModelBase
 import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import sample.app.data.model.Comment
 import sample.app.data.model.Post
 import sample.app.domain.GetPostCommentsUseCase
@@ -43,30 +41,26 @@ class PostDetailScreenModel(
     }
 
     private fun observeSavedState() {
-        screenModelScope.launch {
-            observeSavedPostsUseCase().collect { savedPosts ->
-                updateState { it.copy(isSaved = savedPosts.any { post -> post.id == postId }) }
+        launch {
+            observeSavedPostsUseCase().collect { result ->
+                result.onSuccess { savedPosts ->
+                    updateState { it.copy(isSaved = savedPosts.any { post -> post.id == postId }) }
+                }
             }
         }
     }
 
-    override fun handleUIEvent(event: PostDetailEvent) {
+    override suspend fun handleUIEvent(event: PostDetailEvent) {
         when (event) {
-            PostDetailEvent.NavigateBack -> screenModelScope.launch {
-                emitNavigationEvent(NavigationEvent.NavigateBack)
-            }
+            PostDetailEvent.NavigateBack -> emitNavigationEvent(NavigationEvent.NavigateBack)
             PostDetailEvent.Retry -> loadPostAndComments()
-            PostDetailEvent.SavePost -> screenModelScope.launch {
-                state.value.post?.let { savePostUseCase(it) }
-            }
-            PostDetailEvent.RemovePost -> screenModelScope.launch {
-                removePostUseCase(postId)
-            }
+            PostDetailEvent.SavePost -> state.value.post?.let { savePostUseCase(it) }
+            PostDetailEvent.RemovePost -> removePostUseCase(postId)
         }
     }
 
     private fun loadPostAndComments() {
-        screenModelScope.launch {
+        launch {
             updateState { it.copy(isLoading = true, error = null) }
             val postDeferred = async { getPostUseCase(postId) }
             val commentsDeferred = async { getPostCommentsUseCase(postId) }
