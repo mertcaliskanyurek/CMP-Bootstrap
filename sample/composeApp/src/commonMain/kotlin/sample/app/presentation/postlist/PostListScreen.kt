@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -37,7 +38,20 @@ class PostListScreen : ScreenBase<PostListState, PostListEvent, PostListScreenMo
         emitUIEvent: (PostListEvent) -> Unit
     ) {
         Scaffold(
-            topBar = { TopAppBar(title = { Text("Posts") }) }
+            topBar = {
+                TopAppBar(
+                    title = { Text("Posts") },
+                    actions = {
+                        IconButton(onClick = { emitUIEvent(PostListEvent.NavigateToSavedPosts) }) {
+                            Text(
+                                text = "\u2605",
+                                style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                )
+            }
         ) { padding ->
             Box(modifier = Modifier.fillMaxSize().padding(padding)) {
                 when {

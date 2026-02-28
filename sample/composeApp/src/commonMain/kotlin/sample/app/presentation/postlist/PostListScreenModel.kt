@@ -7,6 +7,7 @@ import kotlinx.coroutines.launch
 import sample.app.data.model.Post
 import sample.app.domain.GetPostsUseCase
 import sample.app.presentation.postdetail.PostDetailRoute
+import sample.app.presentation.savedposts.SavedPostsRoute
 
 data class PostListState(
     val posts: List<Post> = emptyList(),
@@ -17,6 +18,7 @@ data class PostListState(
 sealed class PostListEvent {
     data object LoadPosts : PostListEvent()
     data class OnPostClick(val postId: Int) : PostListEvent()
+    data object NavigateToSavedPosts : PostListEvent()
 }
 
 class PostListScreenModel(
@@ -34,6 +36,9 @@ class PostListScreenModel(
                 emitNavigationEvent(
                     NavigationEvent.Push(PostDetailRoute(event.postId))
                 )
+            }
+            PostListEvent.NavigateToSavedPosts -> screenModelScope.launch {
+                emitNavigationEvent(NavigationEvent.Push(SavedPostsRoute()))
             }
         }
     }

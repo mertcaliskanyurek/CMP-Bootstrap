@@ -32,12 +32,14 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.foundation)
             implementation(compose.material3)
-            implementation(project(":architecture"))
-            implementation(project(":networking"))
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.koin)
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
+
+            implementation(project(":architecture"))
+            implementation(project(":networking"))
+            implementation(project(":datastore"))
         }
 
         androidMain.dependencies {

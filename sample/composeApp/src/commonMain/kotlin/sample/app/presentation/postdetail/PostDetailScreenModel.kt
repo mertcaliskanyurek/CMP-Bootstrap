@@ -9,27 +9,45 @@ import sample.app.data.model.Comment
 import sample.app.data.model.Post
 import sample.app.domain.GetPostCommentsUseCase
 import sample.app.domain.GetPostUseCase
+import sample.app.domain.ObserveSavedPostsUseCase
+import sample.app.domain.RemovePostUseCase
+import sample.app.domain.SavePostUseCase
 
 data class PostDetailState(
     val post: Post? = null,
     val comments: List<Comment> = emptyList(),
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val isSaved: Boolean = false
 )
 
 sealed class PostDetailEvent {
     data object NavigateBack : PostDetailEvent()
     data object Retry : PostDetailEvent()
+    data object SavePost : PostDetailEvent()
+    data object RemovePost : PostDetailEvent()
 }
 
 class PostDetailScreenModel(
     private val postId: Int,
     private val getPostUseCase: GetPostUseCase,
-    private val getPostCommentsUseCase: GetPostCommentsUseCase
+    private val getPostCommentsUseCase: GetPostCommentsUseCase,
+    private val observeSavedPostsUseCase: ObserveSavedPostsUseCase,
+    private val savePostUseCase: SavePostUseCase,
+    private val removePostUseCase: RemovePostUseCase
 ) : ScreenModelBase<PostDetailState, PostDetailEvent>(PostDetailState()) {
 
     init {
         loadPostAndComments()
+        observeSavedState()
+    }
+
+    private fun observeSavedState() {
+        screenModelScope.launch {
+            observeSavedPostsUseCase().collect { savedPosts ->
+                updateState { it.copy(isSaved = savedPosts.any { post -> post.id == postId }) }
+            }
+        }
     }
 
     override fun handleUIEvent(event: PostDetailEvent) {
@@ -38,6 +56,12 @@ class PostDetailScreenModel(
                 emitNavigationEvent(NavigationEvent.NavigateBack)
             }
             PostDetailEvent.Retry -> loadPostAndComments()
+            PostDetailEvent.SavePost -> screenModelScope.launch {
+                state.value.post?.let { savePostUseCase(it) }
+            }
+            PostDetailEvent.RemovePost -> screenModelScope.launch {
+                removePostUseCase(postId)
+            }
         }
     }
 

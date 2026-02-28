@@ -52,6 +52,21 @@ class PostDetailScreen(
                         IconButton(onClick = { emitUIEvent(PostDetailEvent.NavigateBack) }) {
                             Text("<")
                         }
+                    },
+                    actions = {
+                        IconButton(
+                            onClick = {
+                                if (state.isSaved) emitUIEvent(PostDetailEvent.RemovePost)
+                                else emitUIEvent(PostDetailEvent.SavePost)
+                            }
+                        ) {
+                            Text(
+                                text = if (state.isSaved) "\u2605" else "\u2606",
+                                style = MaterialTheme.typography.titleLarge,
+                                color = if (state.isSaved) MaterialTheme.colorScheme.primary
+                                        else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     }
                 )
             }
