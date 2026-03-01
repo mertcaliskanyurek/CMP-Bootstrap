@@ -2,13 +2,17 @@ package sample.app.presentation.postlist
 
 import com.mertcaliskanyurek.cmpbootstrap.presentation.NavigationEvent
 import com.mertcaliskanyurek.cmpbootstrap.presentation.ScreenModelBase
+import sample.app.data.model.LocalPost
 import sample.app.data.model.Post
 import sample.app.domain.GetPostsUseCase
+import sample.app.domain.ObserveLocalPostsUseCase
 import sample.app.presentation.postdetail.PostDetailRoute
 import sample.app.presentation.savedposts.SavedPostsRoute
+import sample.app.presentation.writepost.WritePostRoute
 
 data class PostListState(
     val posts: List<Post> = emptyList(),
+    val localPosts: List<LocalPost> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null
 )
@@ -17,14 +21,17 @@ sealed class PostListEvent {
     data object LoadPosts : PostListEvent()
     data class OnPostClick(val postId: Int) : PostListEvent()
     data object NavigateToSavedPosts : PostListEvent()
+    data object NavigateToWritePost : PostListEvent()
 }
 
 class PostListScreenModel(
-    private val getPostsUseCase: GetPostsUseCase
+    private val getPostsUseCase: GetPostsUseCase,
+    private val observeLocalPostsUseCase: ObserveLocalPostsUseCase
 ) : ScreenModelBase<PostListState, PostListEvent>(PostListState()) {
 
     init {
         loadPosts()
+        observeLocalPosts()
     }
 
     override suspend fun handleUIEvent(event: PostListEvent) {
@@ -35,6 +42,19 @@ class PostListScreenModel(
             }
             PostListEvent.NavigateToSavedPosts -> {
                 emitNavigationEvent(NavigationEvent.Push(SavedPostsRoute()))
+            }
+            PostListEvent.NavigateToWritePost -> {
+                emitNavigationEvent(NavigationEvent.Push(WritePostRoute()))
+            }
+        }
+    }
+
+    private fun observeLocalPosts() {
+        launch {
+            observeLocalPostsUseCase().collect { result ->
+                result.onSuccess { localPosts ->
+                    updateState { it.copy(localPosts = localPosts) }
+                }
             }
         }
     }

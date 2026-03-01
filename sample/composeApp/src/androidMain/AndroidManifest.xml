@@ -7,6 +7,15 @@
             android:icon="@android:mipmap/sym_def_app_icon"
             android:label="sample"
             android:theme="@android:style/Theme.Material.NoActionBar">
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.cmpbootstrap.mediapicker.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/media_picker_paths" />
+        </provider>
         <activity
             android:name=".AppActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"

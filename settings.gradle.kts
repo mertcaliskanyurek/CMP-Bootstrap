@@ -33,3 +33,4 @@ include(":sample:composeApp")
 
 include(":networking")
 include(":datastore")
+include(":media")

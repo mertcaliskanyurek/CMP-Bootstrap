@@ -35,6 +35,7 @@ kotlin {
             implementation(project(":architecture"))
             implementation(project(":networking"))
             implementation(project(":datastore"))
+            implementation(project(":media"))
         }
 
         androidMain.dependencies {
