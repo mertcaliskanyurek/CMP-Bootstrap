@@ -1,5 +1,6 @@
 package sample.app.presentation.writepost
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,14 +8,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.koin.koinScreenModel
@@ -34,6 +41,16 @@ class WritePostScreen : ScreenBase<WritePostState, WritePostEvent, WritePostScre
         emitUIEvent: (WritePostEvent) -> Unit
     ) {
         val mediaContext = rememberMediaPickerContext()
+
+        val galleryLauncher = rememberMediaPickerLauncher(
+            context = mediaContext,
+            config = MediaPickerLauncher.visualMediaPicker()
+        ) { files ->
+            files.firstOrNull()?.let { file ->
+                emitUIEvent(WritePostEvent.FileAttached(file.uri, file.name))
+            }
+        }
+
         val fileLauncher = rememberMediaPickerLauncher(
             context = mediaContext,
             config = MediaPickerLauncher.filePicker()
@@ -42,6 +59,8 @@ class WritePostScreen : ScreenBase<WritePostState, WritePostEvent, WritePostScre
                 emitUIEvent(WritePostEvent.FileAttached(file.uri, file.name))
             }
         }
+
+        var showMenu by remember { mutableStateOf(false) }
 
         Scaffold(
             topBar = {
@@ -83,16 +102,38 @@ class WritePostScreen : ScreenBase<WritePostState, WritePostEvent, WritePostScre
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                OutlinedButton(
-                    onClick = { fileLauncher.launch() },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = if (state.attachedFileName != null)
-                            "File: ${state.attachedFileName}"
-                        else
-                            "Add File"
-                    )
+                Box {
+                    OutlinedButton(
+                        onClick = { showMenu = true },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = if (state.attachedFileName != null)
+                                "File: ${state.attachedFileName}"
+                            else
+                                "Add File"
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Pick from gallery") },
+                            onClick = {
+                                showMenu = false
+                                galleryLauncher.launch()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Pick from files") },
+                            onClick = {
+                                showMenu = false
+                                fileLauncher.launch()
+                            }
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
