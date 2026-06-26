@@ -22,8 +22,8 @@ interface ScreenBase<State, Event, SM : ScreenModelBase<State, Event>> : Screen 
         }
 
         ScreenContent(
-            state = viewModel.state.collectAsStateWithLifecycle().value,
-            emitUIEvent = viewModel::emitUIEvent
+            state = viewModel.uiState.collectAsStateWithLifecycle().value,
+            emitUIEvent = viewModel::handleUIEvent
         )
     }
 

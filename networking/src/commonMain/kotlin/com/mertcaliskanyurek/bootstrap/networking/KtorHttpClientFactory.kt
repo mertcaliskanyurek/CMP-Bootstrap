@@ -83,6 +83,9 @@ internal class KtorHttpClientFactory : HttpClientFactory {
                     exponentialDelay()
                 }
             }
+
+            // Throw ResponseException on non-2xx responses
+            expectSuccess = true
         }
     }
 }

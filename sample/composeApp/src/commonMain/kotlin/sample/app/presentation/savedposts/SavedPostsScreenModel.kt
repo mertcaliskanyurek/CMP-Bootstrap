@@ -23,7 +23,7 @@ class SavedPostsScreenModel(
 ) : ScreenModelBase<SavedPostsState, SavedPostsEvent>(SavedPostsState()) {
 
     init {
-        launch {
+        safeLaunch {
             observeSavedPostsUseCase().collect { result ->
                 result.onSuccess { posts ->
                     updateState { it.copy(posts = posts) }
@@ -32,13 +32,15 @@ class SavedPostsScreenModel(
         }
     }
 
-    override suspend fun handleUIEvent(event: SavedPostsEvent) {
+    override  fun handleUIEvent(event: SavedPostsEvent) {
         when (event) {
             is SavedPostsEvent.OnPostClick -> {
                 emitNavigationEvent(NavigationEvent.Push(PostDetailRoute(event.postId)))
             }
             is SavedPostsEvent.RemovePost -> {
-                removePostUseCase(event.postId)
+                safeLaunch {
+                    removePostUseCase(event.postId)
+                }
             }
             SavedPostsEvent.NavigateBack -> {
                 emitNavigationEvent(NavigationEvent.NavigateBack)

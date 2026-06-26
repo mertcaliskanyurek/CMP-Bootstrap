@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.android.lint)
+    alias(libs.plugins.maven.publish)
 }
 
 kotlin {
@@ -98,4 +99,35 @@ kotlin {
         }
     }
 
+}
+
+mavenPublishing {
+    publishToMavenCentral()
+    coordinates("com.mertcaliskanyurek.cmpbootstrap", "datastore", "1.0.0")
+
+    pom {
+        name = "CMP Bootstrap DataStore"
+        description = "Kotlin Multiplatform key-value storage utilities"
+        url = "https://github.com/mertcaliskanyurek/CMP-Bootstrap"
+
+        licenses {
+            license {
+                name = "MIT"
+                url = "https://opensource.org/licenses/MIT"
+            }
+        }
+
+        developers {
+            developer {
+                id = "mertcaliskanyurek"
+                name = "Mert Caliskan Yurek"
+                email = "your.email@example.com"
+            }
+        }
+
+        scm {
+            url = "https://github.com/mertcaliskanyurek/CMP-Bootstrap"
+        }
+    }
+    if (project.hasProperty("signing.keyId")) signAllPublications()
 }

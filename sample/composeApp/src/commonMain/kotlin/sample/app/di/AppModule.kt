@@ -27,8 +27,8 @@ fun appModule(dataStoreContext: DataStoreContext) = module {
         ApiClient.create(
             HttpClientConfig(
                 baseUrl = "https://jsonplaceholder.typicode.com/",
-                logLevel = HttpLogLevel.BODY,
-                retryCount = 1
+                logLevel = HttpLogLevel.NONE, // TODO: Use HttpLogLevel.BODY in debug builds only
+                retryCount = 3
             )
         )
     }

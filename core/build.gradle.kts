@@ -26,6 +26,7 @@ kotlin {
 
         commonTest.dependencies {
             implementation(kotlin("test"))
+            implementation(libs.coroutines.test)
         }
 
     }
@@ -63,7 +64,7 @@ mavenPublishing {
     pom {
         name = "CmpBootstrap"
         description = "Kotlin Multiplatform library"
-        url = "github url" //todo
+        url = "https://github.com/mertcaliskanyurek/CMP-Bootstrap"
 
         licenses {
             license {
@@ -74,14 +75,14 @@ mavenPublishing {
 
         developers {
             developer {
-                id = "" //todo
-                name = "" //todo
-                email = "" //todo
+                id = "mertcaliskanyurek"
+                name = "Mert Caliskan Yurek"
+                email = "your.email@example.com"
             }
         }
 
         scm {
-            url = "github url" //todo
+            url = "https://github.com/mertcaliskanyurek/CMP-Bootstrap"
         }
     }
     if (project.hasProperty("signing.keyId")) signAllPublications()

@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.lint)
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.maven.publish)
 }
 
 kotlin {
@@ -99,4 +100,35 @@ kotlin {
         }
     }
 
+}
+
+mavenPublishing {
+    publishToMavenCentral()
+    coordinates("com.mertcaliskanyurek.cmpbootstrap", "media", "1.0.0")
+
+    pom {
+        name = "CMP Bootstrap Media"
+        description = "Kotlin Multiplatform media picker and camera utilities"
+        url = "https://github.com/mertcaliskanyurek/CMP-Bootstrap"
+
+        licenses {
+            license {
+                name = "MIT"
+                url = "https://opensource.org/licenses/MIT"
+            }
+        }
+
+        developers {
+            developer {
+                id = "mertcaliskanyurek"
+                name = "Mert Caliskan Yurek"
+                email = "your.email@example.com"
+            }
+        }
+
+        scm {
+            url = "https://github.com/mertcaliskanyurek/CMP-Bootstrap"
+        }
+    }
+    if (project.hasProperty("signing.keyId")) signAllPublications()
 }

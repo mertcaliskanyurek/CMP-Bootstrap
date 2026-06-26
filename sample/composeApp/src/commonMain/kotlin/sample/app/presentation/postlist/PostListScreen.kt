@@ -32,14 +32,14 @@ import com.mertcaliskanyurek.cmpbootstrap.presentation.ScreenBase
 import sample.app.data.model.LocalPost
 import sample.app.data.model.Post
 
-class PostListScreen : ScreenBase<PostListState, PostListEvent, PostListScreenModel> {
+class PostListScreen : ScreenBase<PostListUiState, PostListEvent, PostListScreenModel> {
 
     @Composable
     override fun provideScreenModel() = koinScreenModel<PostListScreenModel>()
 
     @Composable
     override fun ScreenContent(
-        state: PostListState,
+        state: PostListUiState,
         emitUIEvent: (PostListEvent) -> Unit
     ) {
         Scaffold(

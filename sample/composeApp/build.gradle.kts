@@ -32,7 +32,7 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
 
-            implementation(project(":architecture"))
+            implementation(project(":core"))
             implementation(project(":networking"))
             implementation(project(":datastore"))
             implementation(project(":media"))

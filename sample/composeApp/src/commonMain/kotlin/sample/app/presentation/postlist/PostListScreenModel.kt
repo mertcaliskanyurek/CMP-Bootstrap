@@ -10,7 +10,8 @@ import sample.app.presentation.postdetail.PostDetailRoute
 import sample.app.presentation.savedposts.SavedPostsRoute
 import sample.app.presentation.writepost.WritePostRoute
 
-data class PostListState(
+
+data class PostListUiState(
     val posts: List<Post> = emptyList(),
     val localPosts: List<LocalPost> = emptyList(),
     val isLoading: Boolean = false,
@@ -27,14 +28,14 @@ sealed class PostListEvent {
 class PostListScreenModel(
     private val getPostsUseCase: GetPostsUseCase,
     private val observeLocalPostsUseCase: ObserveLocalPostsUseCase
-) : ScreenModelBase<PostListState, PostListEvent>(PostListState()) {
+) : ScreenModelBase<PostListUiState, PostListEvent>(PostListUiState()) {
 
     init {
         loadPosts()
         observeLocalPosts()
     }
 
-    override suspend fun handleUIEvent(event: PostListEvent) {
+    override fun handleUIEvent(event: PostListEvent) {
         when (event) {
             PostListEvent.LoadPosts -> loadPosts()
             is PostListEvent.OnPostClick -> {
@@ -50,7 +51,7 @@ class PostListScreenModel(
     }
 
     private fun observeLocalPosts() {
-        launch {
+        safeLaunch {
             observeLocalPostsUseCase().collect { result ->
                 result.onSuccess { localPosts ->
                     updateState { it.copy(localPosts = localPosts) }
@@ -60,7 +61,7 @@ class PostListScreenModel(
     }
 
     private fun loadPosts() {
-        launch {
+        safeLaunch {
             updateState { it.copy(isLoading = true, error = null) }
             val result = getPostsUseCase(Unit)
             result.fold(
@@ -68,7 +69,7 @@ class PostListScreenModel(
                     updateState { it.copy(posts = posts, isLoading = false) }
                 },
                 onFailure = { error ->
-                    updateState { it.copy(error = error.message ?: "Unknown error", isLoading = false) }
+                    updateState { it.copy(error = error.message, isLoading = false) }
                 }
             )
         }

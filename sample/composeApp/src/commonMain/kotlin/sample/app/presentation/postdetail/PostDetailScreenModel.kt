@@ -41,7 +41,7 @@ class PostDetailScreenModel(
     }
 
     private fun observeSavedState() {
-        launch {
+        safeLaunch {
             observeSavedPostsUseCase().collect { result ->
                 result.onSuccess { savedPosts ->
                     updateState { it.copy(isSaved = savedPosts.any { post -> post.id == postId }) }
@@ -50,17 +50,29 @@ class PostDetailScreenModel(
         }
     }
 
-    override suspend fun handleUIEvent(event: PostDetailEvent) {
+    override fun handleUIEvent(event: PostDetailEvent) {
         when (event) {
             PostDetailEvent.NavigateBack -> emitNavigationEvent(NavigationEvent.NavigateBack)
             PostDetailEvent.Retry -> loadPostAndComments()
-            PostDetailEvent.SavePost -> state.value.post?.let { savePostUseCase(it) }
-            PostDetailEvent.RemovePost -> removePostUseCase(postId)
+            PostDetailEvent.SavePost -> savePost()
+            PostDetailEvent.RemovePost -> removePost()
+        }
+    }
+
+    private fun savePost() {
+        safeLaunch {
+            uiState.value.post?.let { savePostUseCase(it) }
+        }
+    }
+
+    private fun removePost() {
+        safeLaunch {
+            removePostUseCase(postId)
         }
     }
 
     private fun loadPostAndComments() {
-        launch {
+        safeLaunch {
             updateState { it.copy(isLoading = true, error = null) }
             val postDeferred = async { getPostUseCase(postId) }
             val commentsDeferred = async { getPostCommentsUseCase(postId) }

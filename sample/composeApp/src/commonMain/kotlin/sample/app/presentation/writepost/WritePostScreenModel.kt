@@ -26,7 +26,7 @@ class WritePostScreenModel(
     private val saveLocalPostUseCase: SaveLocalPostUseCase
 ) : ScreenModelBase<WritePostState, WritePostEvent>(WritePostState()) {
 
-    override suspend fun handleUIEvent(event: WritePostEvent) {
+    override fun handleUIEvent(event: WritePostEvent) {
         when (event) {
             is WritePostEvent.TitleChanged -> updateState { it.copy(title = event.title) }
             is WritePostEvent.BodyChanged -> updateState { it.copy(body = event.body) }
@@ -39,9 +39,9 @@ class WritePostScreenModel(
     }
 
     private fun save() {
-        val current = state.value
+        val current = uiState.value
         if (current.title.isBlank()) return
-        launch {
+        safeLaunch {
             updateState { it.copy(isSaving = true) }
             val post = LocalPost(
                 id = Random.nextLong().toString(),

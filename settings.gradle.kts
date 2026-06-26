@@ -28,7 +28,7 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-include(":architecture")
+include(":core")
 include(":sample:composeApp")
 
 include(":networking")
