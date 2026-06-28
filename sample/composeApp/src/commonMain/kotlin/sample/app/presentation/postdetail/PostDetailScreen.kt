@@ -1,6 +1,5 @@
 package sample.app.presentation.postdetail
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,9 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -19,12 +16,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.koin.koinScreenModel
 import com.mertcaliskanyurek.cmpbootstrap.presentation.ScreenBase
+import com.mertcaliskanyurek.cmpbootstrap.presentation.StateLayout
 import org.koin.core.parameter.parametersOf
 import sample.app.data.model.Comment
 import sample.app.data.model.Post
@@ -71,37 +68,25 @@ class PostDetailScreen(
                 )
             }
         ) { padding ->
-            Box(modifier = Modifier.fillMaxSize().padding(padding)) {
-                when {
-                    state.isLoading -> CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                    state.error != null -> Column(
-                        modifier = Modifier.align(Alignment.Center),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(text = state.error)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Button(onClick = { emitUIEvent(PostDetailEvent.Retry) }) {
-                            Text("Retry")
-                        }
+            StateLayout(
+                state = state,
+                modifier = Modifier.padding(padding)
+            ) {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    state.post?.let { post ->
+                        item { PostDetailHeader(post = post) }
                     }
-                    else -> LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        state.post?.let { post ->
-                            item { PostDetailHeader(post = post) }
+                    if (state.comments.isNotEmpty()) {
+                        item {
+                            HorizontalDivider()
+                            Text(
+                                text = "Comments (${state.comments.size})",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(16.dp)
+                            )
                         }
-                        if (state.comments.isNotEmpty()) {
-                            item {
-                                HorizontalDivider()
-                                Text(
-                                    text = "Comments (${state.comments.size})",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier.padding(16.dp)
-                                )
-                            }
-                            items(state.comments) { comment ->
-                                CommentItem(comment = comment)
-                            }
+                        items(state.comments) { comment ->
+                            CommentItem(comment = comment)
                         }
                     }
                 }

@@ -30,18 +30,25 @@ internal class DataStoreKeyValueStorage(
     override fun <T> observe(key: StorageKey<T>): Flow<T?> =
         dataStore.data.map { it[preferencesKey(key)] }
 
-    override suspend fun <T> get(key: StorageKey<T>): T? =
+    override suspend fun <T> get(key: StorageKey<T>): T? = mapStorageErrors {
         observe(key).first()
+    }
 
     override suspend fun <T> put(key: StorageKey<T>, value: T) {
-        dataStore.edit { it[preferencesKey(key)] = value }
+        mapStorageErrors {
+            dataStore.edit { it[preferencesKey(key)] = value }
+        }
     }
 
     override suspend fun <T> remove(key: StorageKey<T>) {
-        dataStore.edit { it.remove(preferencesKey(key)) }
+        mapStorageErrors {
+            dataStore.edit { it.remove(preferencesKey(key)) }
+        }
     }
 
     override suspend fun clear() {
-        dataStore.edit { it.clear() }
+        mapStorageErrors {
+            dataStore.edit { it.clear() }
+        }
     }
 }

@@ -1,7 +1,11 @@
 package sample.app.presentation.postlist
 
+import com.mertcaliskanyurek.cmpbootstrap.domain.AppError
+import com.mertcaliskanyurek.cmpbootstrap.presentation.LoadableState
 import com.mertcaliskanyurek.cmpbootstrap.presentation.NavigationEvent
 import com.mertcaliskanyurek.cmpbootstrap.presentation.ScreenModelBase
+import com.mertcaliskanyurek.cmpbootstrap.presentation.UiError
+import com.mertcaliskanyurek.cmpbootstrap.presentation.toUiError
 import sample.app.data.model.LocalPost
 import sample.app.data.model.Post
 import sample.app.domain.GetPostsUseCase
@@ -14,9 +18,9 @@ import sample.app.presentation.writepost.WritePostRoute
 data class PostListUiState(
     val posts: List<Post> = emptyList(),
     val localPosts: List<LocalPost> = emptyList(),
-    val isLoading: Boolean = false,
-    val error: String? = null
-)
+    override val isLoading: Boolean = false,
+    override val error: UiError? = null
+) : LoadableState
 
 sealed class PostListEvent {
     data object LoadPosts : PostListEvent()
@@ -68,8 +72,14 @@ class PostListScreenModel(
                 onSuccess = { posts ->
                     updateState { it.copy(posts = posts, isLoading = false) }
                 },
-                onFailure = { error ->
-                    updateState { it.copy(error = error.message, isLoading = false) }
+                onFailure = { throwable ->
+                    val appError = throwable as? AppError ?: AppError.Unexpected(throwable)
+                    updateState {
+                        it.copy(
+                            error = appError.toUiError(onRetry = { loadPosts() }),
+                            isLoading = false
+                        )
+                    }
                 }
             )
         }

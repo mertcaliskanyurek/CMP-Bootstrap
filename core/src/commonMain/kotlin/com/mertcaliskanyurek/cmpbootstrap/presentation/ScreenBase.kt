@@ -21,10 +21,24 @@ interface ScreenBase<State, Event, SM : ScreenModelBase<State, Event>> : Screen 
             }
         }
 
+        LaunchedEffect(viewModel) {
+            viewModel.uiEffect.collect { effect ->
+                handleUiEffect(effect)
+            }
+        }
+
         ScreenContent(
             state = viewModel.uiState.collectAsStateWithLifecycle().value,
             emitUIEvent = viewModel::handleUIEvent
         )
+    }
+
+    /**
+     * Override to handle specific [UiEffect]s.
+     * Default implementation handles snackbars and toasts if possible.
+     */
+    fun handleUiEffect(effect: UiEffect) {
+        // Handle side effects that don't require Composable context
     }
 
     @Composable

@@ -23,6 +23,9 @@ abstract class ScreenModelBase<State, Event>(
     val uiState: StateFlow<State>
         field = MutableStateFlow(initialState)
 
+    private val _uiEffect = MutableSharedFlow<UiEffect>()
+    val uiEffect: SharedFlow<UiEffect> = _uiEffect
+
     /**
      * Coroutine scope tied to this screen model's lifecycle.
      * Wraps Voyager's screenModelScope for testing purposes. Customers can override scope
@@ -33,16 +36,28 @@ abstract class ScreenModelBase<State, Event>(
         scope.launch { navigationEvent.emit(event) }
     }
 
+    protected fun emitUiEffect(effect: UiEffect) {
+        scope.launch { _uiEffect.emit(effect) }
+    }
+
     /**
      * Convenience for launching coroutines within this screen model's scope.
+     * Includes a default error handler that logs the error and optionally
+     * provides a UI feedback.
      */
     protected fun safeLaunch(
         coroutineContext: CoroutineContext = EmptyCoroutineContext,
-        onError: (Throwable) -> Unit = {},
+        onError: ((Throwable) -> Unit)? = null,
         block: suspend CoroutineScope.() -> Unit
     ) {
         scope.launch(coroutineContext + CoroutineExceptionHandler { _, throwable ->
-            onError(throwable)
+            if (onError != null) {
+                onError(throwable)
+            } else {
+                // Default error handling: emit a global error effect
+                val message = throwable.message ?: "An unexpected error occurred"
+                emitUiEffect(UiEffect.ShowSnackbar(message))
+            }
         }) {
             block()
         }
@@ -51,7 +66,7 @@ abstract class ScreenModelBase<State, Event>(
     /**
      * Convenience for updating the UI state.
      */
-    fun updateState(reducer: (State) -> State) {
+    protected fun updateState(reducer: (State) -> State) {
         uiState.update(reducer)
     }
 

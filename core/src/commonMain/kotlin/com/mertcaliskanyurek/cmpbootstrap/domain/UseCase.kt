@@ -14,7 +14,8 @@ abstract class UseCase<in Params, out T>(
                 Result.success(execute(params))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            val appError = e as? AppError ?: AppError.Unexpected(e)
+            Result.failure(appError)
         }
     }
 

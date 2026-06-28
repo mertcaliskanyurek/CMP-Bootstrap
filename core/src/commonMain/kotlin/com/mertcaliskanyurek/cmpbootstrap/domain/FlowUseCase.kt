@@ -24,7 +24,10 @@ abstract class FlowUseCase<in Params, out T>(
     operator fun invoke(params: Params): Flow<Result<T>> =
         execute(params)
             .map { Result.success(it) }
-            .catch { e -> emit(Result.failure(e)) }
+            .catch { e ->
+                val appError = e as? AppError ?: AppError.Unexpected(e)
+                emit(Result.failure(appError))
+            }
             .flowOn(dispatcher)
 
     protected abstract fun execute(params: Params): Flow<T>

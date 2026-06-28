@@ -1,28 +1,12 @@
 plugins {
     alias(libs.plugins.multiplatform)
-    alias(libs.plugins.android.kotlin.multiplatform.library)
-    alias(libs.plugins.android.lint)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.maven.publish)
 }
 
 kotlin {
-
-    // Target declarations - add or remove as needed below. These define
-    // which platforms this KMP module supports.
-    // See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
-    androidLibrary {
-        namespace = "com.mertcaliskanyurek.bootstrap.datastore"
-        compileSdk = 36
-        minSdk = 24
-
-        withHostTestBuilder {
-        }
-
-        withDeviceTestBuilder {
-            sourceSetTreeName = "test"
-        }.configure {
-            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
+    androidTarget {
+        publishLibraryVariants("release")
     }
 
     // For iOS targets, this is also where you should
@@ -60,15 +44,14 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(libs.kotlin.stdlib)
+                api(project(":core"))
                 implementation(libs.datastore.preferences)
-                implementation(libs.coroutines.core)
             }
         }
 
         commonTest {
             dependencies {
-                implementation(libs.kotlin.test)
+
             }
         }
 
@@ -80,7 +63,7 @@ kotlin {
             }
         }
 
-        getByName("androidDeviceTest") {
+        val androidInstrumentedTest by getting {
             dependencies {
                 implementation(libs.androidx.runner)
                 implementation(libs.androidx.core)
@@ -99,6 +82,15 @@ kotlin {
         }
     }
 
+}
+
+android {
+    namespace = "com.mertcaliskanyurek.bootstrap.datastore"
+    compileSdk = 36
+    defaultConfig {
+        minSdk = 24
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
 }
 
 mavenPublishing {

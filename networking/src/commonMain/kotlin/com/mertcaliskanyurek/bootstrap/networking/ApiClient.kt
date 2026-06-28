@@ -11,31 +11,31 @@ class ApiClient(val httpClient: IHttpClient) {
     suspend inline fun <reified T> get(
         url: String,
         noinline configure: HttpRequestConfig.() -> Unit = {}
-    ): T {
-        return httpClient.get(url, configure)
+    ): T = mapNetworkErrors {
+        httpClient.get(url, configure)
     }
 
     suspend inline fun <reified T, reified R> post(
         url: String,
         body: T,
         noinline configure: HttpRequestConfig.() -> Unit = {}
-    ): R {
-        return httpClient.post(url, body, configure)
+    ): R = mapNetworkErrors {
+        httpClient.post(url, body, configure)
     }
 
     suspend inline fun <reified T, reified R> put(
         url: String,
         body: T,
         noinline configure: HttpRequestConfig.() -> Unit = {}
-    ): R {
-        return httpClient.put(url, body, configure)
+    ): R = mapNetworkErrors {
+        httpClient.put(url, body, configure)
     }
 
     suspend inline fun <reified T> delete(
         url: String,
         noinline configure: HttpRequestConfig.() -> Unit = {}
-    ): T {
-        return httpClient.delete(url, configure)
+    ): T = mapNetworkErrors {
+        httpClient.delete(url, configure)
     }
 
     suspend fun close() {

@@ -60,17 +60,17 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
+                api(project(":core"))
+                api(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.kotlin.stdlib)
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.content.negotiation)
                 implementation(libs.ktor.client.logging)
-                api(libs.ktor.serialization.kotlinx.json)
             }
         }
 
         commonTest {
             dependencies {
-                implementation(libs.kotlin.test)
             }
         }
 

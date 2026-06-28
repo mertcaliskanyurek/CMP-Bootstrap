@@ -1,7 +1,11 @@
 package sample.app.presentation.postdetail
 
+import com.mertcaliskanyurek.cmpbootstrap.domain.AppError
+import com.mertcaliskanyurek.cmpbootstrap.presentation.LoadableState
 import com.mertcaliskanyurek.cmpbootstrap.presentation.NavigationEvent
 import com.mertcaliskanyurek.cmpbootstrap.presentation.ScreenModelBase
+import com.mertcaliskanyurek.cmpbootstrap.presentation.UiError
+import com.mertcaliskanyurek.cmpbootstrap.presentation.toUiError
 import kotlinx.coroutines.async
 import sample.app.data.model.Comment
 import sample.app.data.model.Post
@@ -14,10 +18,10 @@ import sample.app.domain.SavePostUseCase
 data class PostDetailState(
     val post: Post? = null,
     val comments: List<Comment> = emptyList(),
-    val isLoading: Boolean = false,
-    val error: String? = null,
+    override val isLoading: Boolean = false,
+    override val error: UiError? = null,
     val isSaved: Boolean = false
-)
+) : LoadableState
 
 sealed class PostDetailEvent {
     data object NavigateBack : PostDetailEvent()
@@ -87,9 +91,14 @@ class PostDetailScreenModel(
                     )
                 }
             } else {
-                val error = (postResult.exceptionOrNull() ?: commentsResult.exceptionOrNull())
-                    ?.message ?: "Unknown error"
-                updateState { it.copy(error = error, isLoading = false) }
+                val throwable = postResult.exceptionOrNull() ?: commentsResult.exceptionOrNull()
+                val appError = throwable as? AppError ?: AppError.Unexpected(throwable ?: Exception("Unknown error"))
+                updateState {
+                    it.copy(
+                        error = appError.toUiError(onRetry = { loadPostAndComments() }),
+                        isLoading = false
+                    )
+                }
             }
         }
     }

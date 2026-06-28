@@ -16,23 +16,22 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            api(libs.kotlin.stdlib)
             api(libs.voyager.koin)
             api(libs.voyager.screenmodel)
             api(libs.coroutines.core)
             api(compose.runtime)
             api(compose.ui)
             api(compose.foundation)
+            api(compose.material3)
         }
 
         commonTest.dependencies {
             implementation(kotlin("test"))
-            implementation(libs.coroutines.test)
+            api(libs.kotlin.test)
+            api(libs.coroutines.test)
         }
 
-    }
-
-    sourceSets.all {
-        languageSettings.enableLanguageFeature("ExplicitBackingFields")
     }
 
     //https://kotlinlang.org/docs/native-objc-interop.html#export-of-kdoc-comments-to-generated-objective-c-headers
@@ -42,6 +41,10 @@ kotlin {
                 freeCompilerArgs.add("-Xexport-kdoc")
             }
         }
+    }
+
+    compilerOptions {
+        freeCompilerArgs.add("-Xexplicit-backing-fields")
     }
 
 }

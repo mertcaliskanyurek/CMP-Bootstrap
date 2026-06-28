@@ -22,7 +22,6 @@ kotlin {
     }
 
     sourceSets.all {
-        languageSettings.enableLanguageFeature("ExplicitBackingFields")
         languageSettings.optIn("androidx.compose.material3.ExperimentalMaterial3Api")
     }
 

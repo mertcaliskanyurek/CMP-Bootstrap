@@ -66,16 +66,12 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(libs.kotlin.stdlib)
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(libs.coroutines.core)
+                api(project(":core"))
             }
         }
 
         commonTest {
             dependencies {
-                implementation(libs.kotlin.test)
             }
         }
 
