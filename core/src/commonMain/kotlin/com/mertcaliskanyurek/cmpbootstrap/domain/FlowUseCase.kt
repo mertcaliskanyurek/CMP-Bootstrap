@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Base class for use cases that return a [Flow] of [Result]-wrapped values.
@@ -25,6 +26,8 @@ abstract class FlowUseCase<in Params, out T>(
         execute(params)
             .map { Result.success(it) }
             .catch { e ->
+                if (e is CancellationException) throw e
+
                 val appError = e as? AppError ?: AppError.Unexpected(e)
                 emit(Result.failure(appError))
             }
@@ -36,6 +39,5 @@ abstract class FlowUseCase<in Params, out T>(
 abstract class NoParamFlowUseCase<out T>(
     dispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : FlowUseCase<Unit, T>(dispatcher) {
-
     operator fun invoke(): Flow<Result<T>> = invoke(Unit)
 }

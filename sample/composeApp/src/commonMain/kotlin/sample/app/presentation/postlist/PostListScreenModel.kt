@@ -67,7 +67,7 @@ class PostListScreenModel(
     private fun loadPosts() {
         safeLaunch {
             updateState { it.copy(isLoading = true, error = null) }
-            val result = getPostsUseCase(Unit)
+            val result = getPostsUseCase()
             result.fold(
                 onSuccess = { posts ->
                     updateState { it.copy(posts = posts, isLoading = false) }
